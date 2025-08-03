@@ -41,6 +41,10 @@ import PhotosUI
       onError("Already picking an image")
       return
     }
+    
+    self.onImagePickedSuccess = onSuccess
+    self.onImagePickedError = onError
+    
     guard let rootVc else {
       onImagePicked(result: .error("Failed to pick an image"))
       return
@@ -72,11 +76,12 @@ import PhotosUI
   
   private func onImagePicked(result: imagePickedResult){
     guard let onImagePickedSuccess, let onImagePickedError else { return }
+    
     switch result {
-    case .success(let uri):
-      onImagePickedSuccess(uri)
-    case .error(let error):
-      onImagePickedError(error)
+      case .success(let uri):
+        onImagePickedSuccess(uri)
+      case .error(let error):
+        onImagePickedError(error)
     }
     
     self.onImagePickedError = nil
@@ -109,11 +114,12 @@ extension ImagePickerImpl: PHPickerViewControllerDelegate {
       
       let fileManager = FileManager.default
       let newUrl = fileManager.temporaryDirectory.appendingPathComponent(url.lastPathComponent)
-      
+
       do {
         if fileManager.fileExists(atPath: newUrl.path) {
           try fileManager.removeItem(at: newUrl)
         }
+        try fileManager.copyItem(at: url, to: newUrl)
       } catch {
         self.onImagePicked(result: .error("Failed to pick an image"))
         return

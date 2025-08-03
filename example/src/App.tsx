@@ -32,7 +32,10 @@ export default function App() {
         title="Pick Image"
         onPress={() =>
           pickImage(
-            (uri) => setImageUri(uri),
+            (uri) => {
+              console.log('uri', uri);
+              setImageUri(uri);
+            },
             (error) => console.log('error', error)
           )
         }
@@ -42,6 +45,10 @@ export default function App() {
           source={{ uri: imageUri }}
           style={{ width: 200, height: 200 }}
           resizeMode="contain"
+          onLoad={() => console.log('Image loaded successfully')}
+          onError={(error) =>
+            console.log('Image load error:', error.nativeEvent)
+          }
         />
       )}
     </View>
