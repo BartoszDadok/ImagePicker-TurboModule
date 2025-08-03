@@ -1,4 +1,5 @@
-import { View, StyleSheet, Button } from 'react-native';
+import { useState } from 'react';
+import { View, StyleSheet, Button, Image } from 'react-native';
 import {
   getPermissionStatus,
   requestPermission,
@@ -6,21 +7,20 @@ import {
 } from 'react-native-image-picker';
 
 export default function App() {
+  const [imageUri, setImageUri] = useState<string | null>(null);
   return (
     <View style={styles.container}>
       <Button
         title="Get Permission Status"
         onPress={() => {
-          console.log('getPermissionStatus');
-          const status = getPermissionStatus();
-          console.log('status', status);
+          const newStatus = getPermissionStatus();
+          console.log('newStatus', newStatus);
         }}
       />
       <Button
         title="Request Permission"
         onPress={async () => {
           try {
-            console.log('requestPermission');
             const status = requestPermission();
             console.log('requestPermission', status);
           } catch (error) {
@@ -32,11 +32,18 @@ export default function App() {
         title="Pick Image"
         onPress={() =>
           pickImage(
-            (uri) => console.log('URI', uri),
-            () => console.log('cancel')
+            (uri) => setImageUri(uri),
+            (error) => console.log('error', error)
           )
         }
       />
+      {imageUri && (
+        <Image
+          source={{ uri: imageUri }}
+          style={{ width: 200, height: 200 }}
+          resizeMode="contain"
+        />
+      )}
     </View>
   );
 }
